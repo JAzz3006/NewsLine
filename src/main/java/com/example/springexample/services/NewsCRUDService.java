@@ -1,5 +1,5 @@
 package com.example.springexample.services;
-import com.example.springexample.dto.NewsItem;
+import com.example.springexample.dto.News;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -8,17 +8,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
-public class NewsCRUDService implements CRUDService<NewsItem>{
+public class NewsCRUDService implements CRUDService<News>{
     private final AtomicLong idCounter = new AtomicLong(0);
-    private final ConcurrentHashMap<Long, NewsItem> storage = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, News> storage = new ConcurrentHashMap<>();
 
     @Override
-    public Optional<NewsItem> getById(Long id) {
+    public Optional<News> getById(Long id) {
         if (id == null){
             System.out.println("Something is wrong with the id that you use: " + id);
             return Optional.empty();
         }
-        NewsItem value = storage.get(id);
+        News value = storage.get(id);
         if (value == null){
             System.out.println("No object with such id: " + id);
             return Optional.empty();
@@ -27,19 +27,19 @@ public class NewsCRUDService implements CRUDService<NewsItem>{
     }
 
     @Override
-    public Collection<NewsItem> getAll() {
+    public Collection<News> getAll() {
         return storage.values();
     }
 
     @Override
-    public void create(NewsItem item) {
+    public void create(News item) {
         Long key = idCounter.incrementAndGet();
         item.setId(key);
         storage.put(key, item);
     }
 
     @Override
-    public void edit(Long id, NewsItem item) {
+    public void update(Long id, News item) {
         if (!storage.containsKey(id)){
             System.out.println("No element with id: " + id);
             return;
@@ -57,7 +57,7 @@ public class NewsCRUDService implements CRUDService<NewsItem>{
     }
 
     @Override
-    public void del(Long id) {
+    public void deleteById(Long id) {
         if (!storage.containsKey(id)){
             System.out.println("No element to delete with id: " + id);
             return;

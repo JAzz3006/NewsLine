@@ -6,8 +6,8 @@ import java.time.temporal.ChronoUnit;
 
 @Getter
 @Setter
-public class NewsItem {
-    public NewsItem(Long id, String title, String text){
+public class News {
+    public News(Long id, String title, String text){
         this.id = id;
         this.title = title;
         this.text = text;
