@@ -57,12 +57,13 @@ public class NewsCRUDService implements CRUDService<News>{
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         if (!storage.containsKey(id)){
             System.out.println("No element to delete with id: " + id);
-            return;
+            return false;
         }
         storage.remove(id);
+        return true;
     }
 }
 

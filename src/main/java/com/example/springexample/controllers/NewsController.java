@@ -4,7 +4,6 @@ import com.example.springexample.services.NewsCRUDService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Collection;
 import java.util.Map;
 
@@ -38,18 +37,26 @@ public class NewsController {
     }
 
     @PostMapping
-    public void createOneNewsItem (@RequestBody News item){
+    public ResponseEntity<News> createOneNewsItem (@RequestBody News item){
         newsService.create(item);
+        return ResponseEntity.status(HttpStatus.CREATED).body(item);
     }
 
-    @PutMapping(path = "/{id}")
-    public void updateNewsItem(@RequestBody News item, @PathVariable Long id){
+    @PutMapping
+    public ResponseEntity<News> updateNewsItem(@RequestBody News item, @RequestParam Long id){
         newsService.update(id, item);
+        return ResponseEntity.ok(item);
     }
 
-    @DeleteMapping
-    public void deleteMewsItem (@RequestParam Long id){
-        newsService.deleteById(id);
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<?> deleteMewsItem (@PathVariable Long id){
+        boolean deleted = newsService.deleteById(id);
+        if (deleted){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }else {
+            Map<String, String> errorBody = Map.of("message",String.format("No news to delete with id %d", id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
+        }
     }
 
 }

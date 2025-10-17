@@ -7,5 +7,5 @@ public interface CRUDService<T> {
     Collection<T> getAll();
     void create (T item);
     void update(Long id, T item);
-    void deleteById(Long id);
+    boolean deleteById(Long id);
 }
