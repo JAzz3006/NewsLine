@@ -43,9 +43,19 @@ public class NewsController {
     }
 
     @PutMapping
-    public ResponseEntity<News> updateNewsItem(@RequestBody News item, @RequestParam Long id){
-        newsService.update(id, item);
-        return ResponseEntity.ok(item);
+    public ResponseEntity<?> updateNewsItem(@RequestBody News item, @RequestParam Long id){
+        boolean updated = newsService.update(id, item);
+        if (updated){
+            return ResponseEntity.ok(item);
+        }else if (item == null || item.getText().isEmpty()){
+            return ResponseEntity.noContent().build();
+        } else if (!newsService.getStorage().containsKey(id)) {
+            Map<String,String>errorBody = Map.of("message", String.format("No news to edit with is %d", id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
+        }else return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Unknown problem"));
+
     }
 
     @DeleteMapping(path = "/{id}")

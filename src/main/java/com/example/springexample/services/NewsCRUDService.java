@@ -1,21 +1,31 @@
 package com.example.springexample.services;
 import com.example.springexample.dto.News;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
-
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
+@Getter
 public class NewsCRUDService implements CRUDService<News>{
     private final AtomicLong idCounter = new AtomicLong(0);
     private final ConcurrentHashMap<Long, News> storage = new ConcurrentHashMap<>();
 
+    public NewsCRUDService (){
+        Long id = idCounter.incrementAndGet();
+        storage.put(id, new News(id, "Here is the news", "The weather's fine but there may be a meteor shower"));
+        id = idCounter.incrementAndGet();
+        storage.put(id,new News(id, "Here is the news", "A cure has been found for good old rocket lag"));
+        id = idCounter.incrementAndGet();
+        storage.put(id,new News(id, "Here is the news", "Someone left their life behind in a plastic bag"));
+    }
+
     @Override
     public Optional<News> getById(Long id) {
         if (id == null){
-            System.out.println("Something is wrong with the id that you use: " + id);
+            System.out.println("No item with id: " + id);
             return Optional.empty();
         }
         News value = storage.get(id);
@@ -39,21 +49,22 @@ public class NewsCRUDService implements CRUDService<News>{
     }
 
     @Override
-    public void update(Long id, News item) {
+    public boolean update(Long id, News item) {
         if (!storage.containsKey(id)){
             System.out.println("No element with id: " + id);
-            return;
+            return false;
         }
         if (item == null){
             System.out.println("This piece of news is null");
-            return;
+            return false;
         }
         if (item.getText().isEmpty()){
             System.out.println("This piece of news is empty");
-            return;
+            return false;
         }
         item.setId(id);
         storage.put(id, item);
+        return true;
     }
 
     @Override
@@ -65,5 +76,6 @@ public class NewsCRUDService implements CRUDService<News>{
         storage.remove(id);
         return true;
     }
+
 }
 
