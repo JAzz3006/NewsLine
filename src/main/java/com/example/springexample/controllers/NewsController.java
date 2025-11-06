@@ -1,12 +1,14 @@
 package com.example.springexample.controllers;
-import com.example.springexample.dto.News;
+import com.example.springexample.dto.NewsDto;
 import com.example.springexample.services.NewsCRUDService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/news")
 public class NewsController {
@@ -17,18 +19,14 @@ public class NewsController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<?> getNewsItemById(@PathVariable Long id){
-        return newsService.getById(id)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet( () -> {
-                    Map<String, String> errorBody = Map.of("message", String.format("No item with id %d", id));
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
-                });
+    public ResponseEntity<NewsDto> getNewsById(@PathVariable Long id){
+        NewsDto newsDto = newsService.getById(id);
+        return ResponseEntity.ok(newsDto);
     }
 
     @GetMapping
     public ResponseEntity<?> getAllNews (){
-        Collection<News> allNews = newsService.getAll();
+        Collection<NewsDto> allNews = newsService.getAll();
         if (allNews.isEmpty()){
             Map<String, String> responseIfEmpty = Map.of("message", "no news for now");
             return ResponseEntity.status(HttpStatus.OK).body(responseIfEmpty);
@@ -37,36 +35,19 @@ public class NewsController {
     }
 
     @PostMapping
-    public ResponseEntity<News> createOneNewsItem (@RequestBody News item){
+    public ResponseEntity<NewsDto> createOneNewsItem (@RequestBody NewsDto item){
         newsService.create(item);
         return ResponseEntity.status(HttpStatus.CREATED).body(item);
     }
 
     @PutMapping
-    public ResponseEntity<?> updateNewsItem(@RequestBody News item, @RequestParam Long id){
-        boolean updated = newsService.update(id, item);
-        if (updated){
-            return ResponseEntity.ok(item);
-        }else if (item == null || item.getText().isEmpty()){
-            return ResponseEntity.noContent().build();
-        } else if (!newsService.getStorage().containsKey(id)) {
-            Map<String,String>errorBody = Map.of("message", String.format("No news to edit with is %d", id));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
-        }else return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "Unknown problem"));
-
+    public ResponseEntity<NewsDto> updateNewsItem(@RequestBody NewsDto item){
+        newsService.update(item);
+        return ResponseEntity.ok(item);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> deleteMewsItem (@PathVariable Long id){
-        boolean deleted = newsService.deleteById(id);
-        if (deleted){
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }else {
-            Map<String, String> errorBody = Map.of("message",String.format("No news to delete with id %d", id));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
-        }
+    public ResponseEntity<NewsDto> deleteMewsItem (@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 }

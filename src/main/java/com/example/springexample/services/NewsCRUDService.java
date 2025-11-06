@@ -1,81 +1,71 @@
 package com.example.springexample.services;
-import com.example.springexample.dto.News;
+import com.example.springexample.dto.NewsDto;
+import com.example.springexample.entity.News;
+import com.example.springexample.exception.NewsNotFoundException;
+import com.example.springexample.repositories.NewsRepository;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
+import java.util.Collection;
+import java.util.List;
+
+@Slf4j
 @Service
 @Getter
-public class NewsCRUDService implements CRUDService<News>{
-    private final AtomicLong idCounter = new AtomicLong(0);
-    private final ConcurrentHashMap<Long, News> storage = new ConcurrentHashMap<>();
+@RequiredArgsConstructor
+public class NewsCRUDService implements CRUDService<NewsDto>{
+//    private final AtomicLong idCounter = new AtomicLong(0);
+//    private final ConcurrentHashMap<Long, NewsDto> storage = new ConcurrentHashMap<>();
+    private final NewsRepository newsRepository;
 
-    public NewsCRUDService (){
-        Long id = idCounter.incrementAndGet();
-        storage.put(id, new News(id, "Here is the news", "The weather's fine but there may be a meteor shower"));
-        id = idCounter.incrementAndGet();
-        storage.put(id,new News(id, "Here is the news", "A cure has been found for good old rocket lag"));
-        id = idCounter.incrementAndGet();
-        storage.put(id,new News(id, "Here is the news", "Someone left their life behind in a plastic bag"));
+    @Override
+    public NewsDto getById(Long id) {
+        News news = newsRepository.findById(id)
+                .orElseThrow(() -> new NewsNotFoundException(id));
+        return mapToDto(news);
     }
 
     @Override
-    public Optional<News> getById(Long id) {
-        if (id == null){
-            System.out.println("No item with id: " + id);
-            return Optional.empty();
-        }
-        News value = storage.get(id);
-        if (value == null){
-            System.out.println("No object with such id: " + id);
-            return Optional.empty();
-        }
-        return Optional.of(value);
+    public List<NewsDto> getAll() {
+        return newsRepository.findAll().stream()
+                .map(NewsCRUDService::mapToDto)
+                .toList();
     }
 
     @Override
-    public Collection<News> getAll() {
-        return storage.values();
+    public void create(NewsDto newsDto) {
+        newsRepository.save(mapToEntity(newsDto));
     }
 
     @Override
-    public void create(News item) {
-        Long key = idCounter.incrementAndGet();
-        item.setId(key);
-        storage.put(key, item);
+    public void update(NewsDto newsDto) {
+        Long id = newsDto.getId();
+        newsRepository.findById(id)
+                .orElseThrow(() -> new NewsNotFoundException(id));
+        News news = mapToEntity(newsDto);
+        newsRepository.save(news);
     }
 
     @Override
-    public boolean update(Long id, News item) {
-        if (!storage.containsKey(id)){
-            System.out.println("No element with id: " + id);
-            return false;
-        }
-        if (item == null){
-            System.out.println("This piece of news is null");
-            return false;
-        }
-        if (item.getText().isEmpty()){
-            System.out.println("This piece of news is empty");
-            return false;
-        }
-        item.setId(id);
-        storage.put(id, item);
-        return true;
+    public void deleteById(Long id) {
+        newsRepository.findById(id)
+                .orElseThrow(() -> new NewsNotFoundException(id));
+        newsRepository.deleteById(id);
     }
 
-    @Override
-    public boolean deleteById(Long id) {
-        if (!storage.containsKey(id)){
-            System.out.println("No element to delete with id: " + id);
-            return false;
-        }
-        storage.remove(id);
-        return true;
+    public static News mapToEntity(NewsDto newsDto){
+        News news = new News();
+        news.setId(newsDto.getId());
+        news.setTitle(newsDto.getTitle());
+        news.setText(newsDto.getText());
+        //категорию добавить
+        return news;
     }
 
+    public static NewsDto mapToDto (News news){
+        return new NewsDto();
+    }
 }
 

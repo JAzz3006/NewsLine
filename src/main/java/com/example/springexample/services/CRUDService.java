@@ -1,11 +1,14 @@
 package com.example.springexample.services;
+import com.example.springexample.entity.News;
+
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface CRUDService<T> {
-    Optional<T> getById(Long id);
-    Collection<T> getAll();
+    T getById(Long id);
+    List<T> getAll();
     void create (T item);
-    boolean update(Long id, T item);
-    boolean deleteById(Long id);
+    void update(T item);
+    void deleteById(Long id);
 }
