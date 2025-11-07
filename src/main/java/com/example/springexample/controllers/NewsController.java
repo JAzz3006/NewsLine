@@ -1,22 +1,23 @@
 package com.example.springexample.controllers;
 import com.example.springexample.dto.NewsDto;
 import com.example.springexample.services.NewsCRUDService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/news")
+@RequiredArgsConstructor
 public class NewsController {
     private final NewsCRUDService newsService;
 
-    public NewsController (NewsCRUDService newsService){
-        this.newsService = newsService;
-    }
+//    public NewsController (NewsCRUDService newsService){
+//        this.newsService = newsService;
+//    }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<NewsDto> getNewsById(@PathVariable Long id){
@@ -25,19 +26,15 @@ public class NewsController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllNews (){
-        Collection<NewsDto> allNews = newsService.getAll();
-        if (allNews.isEmpty()){
-            Map<String, String> responseIfEmpty = Map.of("message", "no news for now");
-            return ResponseEntity.status(HttpStatus.OK).body(responseIfEmpty);
-        }
+    public ResponseEntity<List<NewsDto>> getAllNews (){
+        List<NewsDto> allNews = newsService.getAll();
         return ResponseEntity.ok(allNews);
     }
 
     @PostMapping
-    public ResponseEntity<NewsDto> createOneNewsItem (@RequestBody NewsDto item){
-        newsService.create(item);
-        return ResponseEntity.status(HttpStatus.CREATED).body(item);
+    public ResponseEntity<NewsDto> createOneNewsItem (@RequestBody NewsDto newsDto){
+        NewsDto saved = newsService.create(newsDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping

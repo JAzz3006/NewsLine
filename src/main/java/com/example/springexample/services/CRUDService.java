@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface CRUDService<T> {
     T getById(Long id);
     List<T> getAll();
-    void create (T item);
+    T create (T item);
     void update(T item);
     void deleteById(Long id);
 }

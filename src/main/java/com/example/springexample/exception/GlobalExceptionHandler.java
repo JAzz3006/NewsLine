@@ -10,13 +10,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NewsNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNewsNotFound(NewsNotFoundException e){
-        Map<String, Object> body = Map.of("error", e.getMessage());
+        Map<String, Object> body = Map.of("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleCategoryNotFound(CategoryNotFoundException e){
-        Map<String, Object> body = Map.of("error", e.getMessage());
+        Map<String, Object> body = Map.of("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(CategoryListEmptyException.class)
+    public ResponseEntity<Map<String, Object>> handleCategoryNotFound(CategoryListEmptyException e){
+        Map<String, Object> body = Map.of("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(body);
+    }
+
+    @ExceptionHandler(NewsListEmptyException.class)
+    public ResponseEntity<Map<String, Object>> handleNewsNotFound(NewsListEmptyException e){
+        Map<String, Object> body = Map.of("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(body);
     }
 }
