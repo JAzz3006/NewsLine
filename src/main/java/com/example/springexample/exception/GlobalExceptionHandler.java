@@ -21,14 +21,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CategoryListEmptyException.class)
-    public ResponseEntity<Map<String, Object>> handleCategoryNotFound(CategoryListEmptyException e){
+    public ResponseEntity<Map<String, Object>> handleCategoryListEmpty(CategoryListEmptyException e){
         Map<String, Object> body = Map.of("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(body);
+        return ResponseEntity.ok(body);
     }
 
     @ExceptionHandler(NewsListEmptyException.class)
-    public ResponseEntity<Map<String, Object>> handleNewsNotFound(NewsListEmptyException e){
+    public ResponseEntity<Map<String, Object>> handleNewsListEmpty(NewsListEmptyException e){
         Map<String, Object> body = Map.of("message", e.getMessage());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(body);
+        return ResponseEntity.ok(body);
     }
 }

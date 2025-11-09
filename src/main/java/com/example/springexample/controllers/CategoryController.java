@@ -28,8 +28,8 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto){
-        CategoryDto savedDto = categoryService.create(categoryDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedDto);
+        CategoryDto saved = categoryService.create(categoryDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping

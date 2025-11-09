@@ -58,7 +58,6 @@ public class NewsCRUDService implements CRUDService<NewsDto>{
             log.info("ошибка при сохранении новости: {}", ex.getMessage());
             throw ex;
         }
-
         return mapToDto(saved);
     }
 

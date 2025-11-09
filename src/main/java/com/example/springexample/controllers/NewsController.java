@@ -15,10 +15,6 @@ import java.util.List;
 public class NewsController {
     private final NewsCRUDService newsService;
 
-//    public NewsController (NewsCRUDService newsService){
-//        this.newsService = newsService;
-//    }
-
     @GetMapping(path = "/{id}")
     public ResponseEntity<NewsDto> getNewsById(@PathVariable Long id){
         NewsDto newsDto = newsService.getById(id);
@@ -33,8 +29,7 @@ public class NewsController {
 
     @PostMapping
     public ResponseEntity<NewsDto> createOneNewsItem (@RequestBody NewsDto newsDto){
-        NewsDto saved = newsService.create(newsDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newsService.create(newsDto));
     }
 
     @PutMapping
@@ -45,6 +40,7 @@ public class NewsController {
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<NewsDto> deleteMewsItem (@PathVariable Long id){
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        newsService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

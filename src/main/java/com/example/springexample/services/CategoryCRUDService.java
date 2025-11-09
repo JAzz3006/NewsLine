@@ -37,8 +37,7 @@ public class CategoryCRUDService implements CRUDService<CategoryDto>{
     @Override
     public CategoryDto create(CategoryDto categoryDto) {
         Category category = mapToEntity(categoryDto);
-        Category saved = categoryRepository.save(category);
-        return mapToDto(saved);
+        return mapToDto(categoryRepository.save(category));
     }
 
     @Override
@@ -46,6 +45,7 @@ public class CategoryCRUDService implements CRUDService<CategoryDto>{
         Long id = categoryDto.getId();
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
+        category = mapToEntity(categoryDto);
         categoryRepository.save(category);
     }
 
